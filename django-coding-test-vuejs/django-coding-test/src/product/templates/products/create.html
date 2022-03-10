@@ -1,15 +1,104 @@
 {% extends 'backend/base.html' %}
 
-{% block title %} Create Product {% endblock %}
+{% block title %} {% if is_update == 1%}Update{% else %}Create{% endif%} Product {% endblock %}
 
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">Create Product</h1>
+    <h1 class="h3 mb-0 text-gray-800">{% if is_update == 1%}Update{% else %}Create{% endif%} Product </h1>
     <a href="{% url 'product:create.product' %}" class="float-right btn btn-primary">All Product</a>
 </div>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        {% if is_update == 1%}
+                            <input type="text" id="product_name" class="form-control" name="product_name" value="{{product_name}}">
+                        {% else %}
+                            <input type="text" id="product_name" class="form-control" name="product_name">
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Product SKU</label>
+                        {% if is_update == 1%}
+                            <input type="text" id="product_sku" class="form-control" name="product_sku" value="{{product_sku}}">
+                        {% else %}
+                            <input type="text" id="product_sku" class="form-control" name="product_sku">
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        {% if is_update == 1 %}
+                            <textarea class="form-control" name="product_description" rows="5">{{product_description}}</textarea>
+                        {% else %}
+                            <textarea class="form-control" name="product_description" rows="5"></textarea>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-head">
+                        <h3 style="color: lightskyblue;">Media</h3>
+                    </div>
+                    <div class="form-group">
+                        <input type="file" id="choosen_file" class="form-control" name="choosen_file">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-head">
+                        <h3 style="color: lightskyblue;">Variants</h3>
+                    </div>
+                        <div class="form-group">
+                            <label>Option</label>
+                            <select class="form-control" multiple="multiple" name="color_select[]" required>
+                              {% for item in variants%}
+                                {% if item.id in product_variant%}
+                                    <option value="{{item.id}}" selected>{{item.title}}</option>
+                                {% else %}
+                                    <option value="{{item.id}}">{{item.title}}</option>
+                                {% endif %}
+                              {% endfor %}
+                            </select>
+                        </div>
 
-<div id="app">
-    <create-product :variants="{{variants|safe}}"></create-product>
+                        <div class="form-group">
+                            <label>Option</label>
+                            <select class="form-control" multiple="multiple" id="exampleFormControlSelect1" name="size_select[]" required>
+                              {% for item in variants%}
+                                {% if item.id in product_variant%}
+                                    <option value="{{item.id}}" selected>{{item.title}}</option>
+                                {% else %}
+                                    <option value="{{item.id}}">{{item.title}}</option>
+                                {% endif %}
+                              {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'product:create.variant' %}" class="float-right btn btn-primary">Add New Variant</a>
+            </div>
+        </div>
+    <button type="submit" class="btn btn-success">Submit</button>
+    <button type="reset" class="btn btn-secondary">Cancel</button>
+</form>
 </div>
 
 {% endblock %}
+<script>
+    // {% for item in variant_list%} console.log('{{ item}}');{% endfor %}
+    // {% if is_update == 1%}
+    //     {% for item in product%}
+    //         $('#product_name').val('{{item.title}}');
+    //         $('#product_sku').val('{{item.sku}}');
+    //         $('#product_description').val('{{item.description}}');
+    //     {% endfor %}
+    // {% endif %}
+</script>
